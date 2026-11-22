@@ -1,0 +1,525 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>내가 만든 것 모아보기</title>
+<meta name="description" content="흩어져 있던 링크를 섬네일 한 장씩 카드로 모았습니다.">
+<!--
+  link-cards · 한 장짜리 카드 모아보기
+  - 이 파일 하나가 전부입니다. 빌드도, 라이브러리도, 서버도 없습니다. 더블클릭하면 열립니다.
+  - 카드 자료는 맨 아래 <script id="cards"> 안의 JSON 한 덩어리입니다. 고칠 곳은 거기뿐입니다.
+  - 자료를 채우는 법은 SKILL.md(Claude 에게) · README.md(사람에게)에 있습니다.
+-->
+<style>
+  :root {
+    --paper: #f1f0e6;
+    --ink: #26352a;
+    --dim: #5d6a5c;
+    --faint: #8f9a86;
+    --hair: #78867044;
+    --card: #fbfaf3;
+    --accent: #94a371;
+    --focus: #aebd71;
+    --ease: cubic-bezier(.2, .8, .2, 1);
+    --col: 1180px;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #141c17;
+      --ink: #eeeddc;
+      --dim: #b2b9a6;
+      --faint: #7d8774;
+      --hair: #d5ddc42e;
+      --card: #1b251f;
+      --accent: #aebd71;
+      color-scheme: dark;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", "Helvetica Neue", system-ui, sans-serif;
+    font-weight: 350;
+    font-size: 16px;
+    line-height: 1.5;
+    letter-spacing: -0.015em;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; }
+  :focus-visible { outline: 2px solid var(--focus); outline-offset: 4px; }
+
+  /* 도감의 세로 안내선 둘. 글보다 앞서지 않게 아주 흐리게 */
+  .guides {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .guides::before, .guides::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: var(--ink);
+    opacity: .12;
+    left: max(10px, calc((100vw - var(--col)) / 2 - 14px));
+  }
+  .guides::after {
+    left: auto;
+    right: max(10px, calc((100vw - var(--col)) / 2 - 14px));
+  }
+
+  .shell {
+    position: relative;
+    z-index: 1;
+    width: min(100%, var(--col));
+    margin: 0 auto;
+    padding: 0 clamp(18px, 4vw, 40px) 80px;
+  }
+
+  /* 머리 */
+  .bar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    height: 76px;
+    border-bottom: 1px solid var(--hair);
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 19px;
+    font-weight: 500;
+    letter-spacing: -.05em;
+    text-decoration: none;
+  }
+  .brand i { font-style: normal; color: var(--accent); }
+  .label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: .13em;
+    text-transform: uppercase;
+    color: var(--dim);
+    font-variant-numeric: tabular-nums;
+  }
+  .bar .label { margin-left: auto; }
+
+  /* 첫 판 */
+  .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+    padding: clamp(40px, 8vw, 96px) 0 34px;
+  }
+  .kicker { display: flex; align-items: center; gap: 9px; }
+  .kicker::before { content: "●"; font-size: 9px; color: var(--accent); }
+  h1 {
+    margin: 0;
+    font-size: clamp(44px, 7.4vw, 108px);
+    font-weight: 300;
+    line-height: 1.02;
+    letter-spacing: -.07em;
+    word-break: keep-all;
+  }
+  .intro {
+    margin: 0;
+    max-width: 40ch;
+    font-size: clamp(16px, 1.4vw, 20px);
+    line-height: 1.55;
+    color: var(--dim);
+    word-break: keep-all;
+  }
+
+  /* 찾기 */
+  .find {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 14px;
+    max-width: 620px;
+    height: 54px;
+    padding: 0 10px 0 22px;
+    border: 1px solid var(--hair);
+    border-radius: 999px;
+    background: var(--card);
+    transition: border-color .2s;
+  }
+  .find:focus-within { border-color: var(--accent); }
+  .find input {
+    flex: 1;
+    min-width: 0;
+    height: 100%;
+    border: 0;
+    background: transparent;
+    color: var(--ink);
+    font: inherit;
+    font-size: 17px;
+    outline: none;
+  }
+  .find input::placeholder { color: var(--faint); }
+  .find input::-webkit-search-cancel-button { display: none; }
+  .find button {
+    height: 38px;
+    padding: 0 14px;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--dim);
+    font: inherit;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .tags button {
+    height: 34px;
+    padding: 0 14px;
+    border: 1px solid var(--hair);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--dim);
+    font: inherit;
+    font-size: 13.5px;
+    cursor: pointer;
+    transition: background .2s, color .2s, border-color .2s;
+  }
+  .tags button[aria-pressed="true"] {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--paper);
+  }
+
+  /* 대목 머리: 번호 · 이름 · 셈 */
+  .head {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-top: 26px;
+    padding: 12px 0;
+    border-top: 1px solid var(--hair);
+    border-bottom: 1px solid var(--hair);
+  }
+  .head b { font-weight: 450; font-size: 15px; letter-spacing: -.03em; }
+  .head .label:last-child { margin-left: auto; }
+
+  /* 카드 */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 34px 26px;
+    padding-top: 30px;
+  }
+  .card {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity .7s var(--ease), transform .7s var(--ease);
+  }
+  .card.in { opacity: 1; transform: none; }
+  .fig {
+    position: relative;
+    margin: 0;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    border-radius: 6px;
+    background: var(--card);
+    box-shadow: 0 0 0 1px var(--hair);
+  }
+  .fig img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+    display: block;
+    transition: transform .9s var(--ease);
+  }
+  .card:hover .fig img { transform: scale(1.035); }
+  /* 그림 위의 맞춤 상자와 짧은 빗금. 도감 그림에 대 본 자국 */
+  .fig::before {
+    content: "";
+    position: absolute;
+    inset: 6%;
+    border: 1px solid rgba(255, 255, 255, .34);
+    border-radius: 3px;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .fig::after {
+    content: "";
+    position: absolute;
+    left: 6%;
+    top: 55%;
+    width: 18%;
+    height: 1px;
+    background: rgba(255, 255, 255, .5);
+    transform: rotate(-16deg);
+    transform-origin: left;
+    pointer-events: none;
+    z-index: 1;
+  }
+  /* 섬네일이 없는 카드: 이름으로 고른 빛깔에 첫 글자 */
+  .blank {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+    padding: 6% 7%;
+    color: rgba(255, 255, 255, .9);
+    font-size: clamp(56px, 7vw, 84px);
+    font-weight: 300;
+    line-height: 1;
+    letter-spacing: -.06em;
+  }
+  .cap {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 11px 0 0;
+  }
+  .card h2 {
+    margin: 8px 0 0;
+    font-size: clamp(20px, 1.8vw, 24px);
+    font-weight: 350;
+    line-height: 1.25;
+    letter-spacing: -.05em;
+    word-break: keep-all;
+    overflow-wrap: anywhere;
+  }
+  .card p {
+    margin: 6px 0 0;
+    font-size: 14.5px;
+    line-height: 1.55;
+    color: var(--dim);
+    word-break: keep-all;
+    overflow-wrap: anywhere;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+  }
+  .foot {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid var(--hair);
+    font-size: 12.5px;
+    color: var(--faint);
+  }
+  .foot span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .foot b {
+    margin-left: auto;
+    flex: 0 0 auto;
+    font-weight: 500;
+    color: var(--ink);
+  }
+  .none {
+    padding: 60px 0;
+    color: var(--dim);
+    font-size: 17px;
+  }
+  .folio {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 70px;
+    padding-top: 14px;
+    border-top: 1px solid var(--hair);
+  }
+  @media (max-width: 700px) {
+    .bar { height: 64px; }
+    .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 26px 14px; }
+    .card h2 { font-size: 17px; }
+    .card p { font-size: 13px; }
+    .foot { font-size: 11.5px; }
+    .blank { font-size: 48px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .card { opacity: 1; transform: none; transition: none; }
+    .fig img { transition: none; }
+  }
+</style>
+</head>
+<body>
+<i class="guides" aria-hidden="true"></i>
+<div class="shell">
+  <header class="bar">
+    <a class="brand" href="./"><i>✳</i><span id="brand"></span></a>
+    <span class="label" id="stamp"></span>
+  </header>
+
+  <section class="hero">
+    <span class="label kicker" id="kicker"></span>
+    <h1 id="title"></h1>
+    <p class="intro" id="intro"></p>
+    <label class="find">
+      <span class="label">찾기</span>
+      <input id="q" type="search" placeholder="이름이나 하는 일로 찾기" autocomplete="off" enterkeyhint="search" aria-label="찾기">
+      <button id="clear" type="button" hidden>지우기</button>
+    </label>
+    <div class="tags" id="tags" aria-label="꼬리표로 보기"></div>
+  </section>
+
+  <div class="head">
+    <span class="label">01</span>
+    <b>모아보기</b>
+    <span class="label" id="count"></span>
+  </div>
+  <main class="grid" id="grid"></main>
+  <p class="none" id="none" hidden></p>
+
+  <footer class="folio">
+    <span class="label">Made with link-cards</span>
+    <span class="label">01 / 01</span>
+  </footer>
+</div>
+
+<!--
+  ↓↓↓ 카드 자료. 고칠 곳은 여기뿐입니다. ↓↓↓
+  title  : 맨 위 큰 제목 (줄바꿈은 \n)
+  owner  : 머리 왼쪽 이름
+  intro  : 제목 아래 한두 줄
+  cards  : 카드 하나에 하나씩
+    url    : 누르면 열리는 주소 (꼭)
+    title  : 카드 제목 한 줄 (꼭)
+    note   : 무엇인지 한 줄
+    image  : 섬네일 주소. 페이지의 미리보기 그림(og:image). 모르면 "" 로 두면 빛깔 카드가 됩니다.
+    tags   : 꼬리표 한두 개
+    date   : 만든 날 (YYYY-MM-DD)
+-->
+<script id="cards" type="application/json">
+{
+  "title": "흩어져 있던 것을\n한 장씩 모았어요",
+  "owner": "내 도구 모아보기",
+  "intro": "만든 것, 써 본 것, 적어 둔 것. 링크마다 섬네일 한 장으로 정리했어요. 이름이나 하는 일로 찾아보세요.",
+  "cards": [
+    { "url": "https://example.com/photo-log", "title": "사진 한 장으로 일지 쓰기", "note": "현장 사진을 올리면 날짜와 장소를 읽어 일지 한 줄을 써 줘요.", "image": "", "tags": ["업무", "사진"], "date": "2026-09-23" },
+    { "url": "https://example.com/meal-sheet", "title": "영수증으로 식비 장부", "note": "영수증을 찍으면 날짜 · 금액 · 인원이 표로 쌓여요.", "image": "", "tags": ["업무", "엑셀"], "date": "2026-10-08" },
+    { "url": "https://example.com/snow-map", "title": "제설함 지도", "note": "주소를 넣으면 가까운 제설함이 지도에 떠요.", "image": "", "tags": ["지도"], "date": "2026-11-15" },
+    { "url": "https://example.com/reading", "title": "한 달 읽은 책 정리", "note": "읽은 책의 밑줄을 한 장씩 카드로 묶었어요.", "image": "", "tags": ["기록"], "date": "2026-11-02" },
+    { "url": "https://example.com/threads-notes", "title": "스레드에 올린 글 모음", "note": "반응이 좋았던 글만 골라 한곳에 모았어요.", "image": "", "tags": ["기록", "스레드"], "date": "2026-11-20" },
+    { "url": "https://example.com/risk-check", "title": "현장 위험 미리 보기", "note": "찍는 즉시 위험한 곳을 표시하고 점검표로 내려받아요.", "image": "", "tags": ["업무", "사진"], "date": "2026-10-17" }
+  ]
+}
+</script>
+
+<script>
+(() => {
+  const data = JSON.parse(document.getElementById("cards").textContent);
+  const cards = (data.cards || []).filter((c) => c && c.url && c.title);
+  const $ = (id) => document.getElementById(id);
+  const two = (n) => String(n).padStart(2, "0");
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[ch]);
+  const host = (url) => { try { return new URL(url).hostname.replace(/^www\./, ""); } catch { return ""; } };
+  const safe = (url) => /^https?:\/\//i.test(url) ? url : "#";
+
+  // 섬네일이 없는 카드의 빛깔. 이름으로 고르니 늘 같은 빛깔이 나온다.
+  const TONES = [["#3a4736", "#82906a"], ["#27425f", "#e9b58c"], ["#4b5a75", "#f2c58f"], ["#0d3644", "#8fd0c8"], ["#4a3556", "#f3b6a6"], ["#32160f", "#f08a4b"], ["#587fa2", "#e9f1f6"], ["#243128", "#aebd71"]];
+  const tone = (text) => { let sum = 0; for (const ch of text) sum = (sum * 31 + ch.codePointAt(0)) % 100003; return TONES[sum % TONES.length]; };
+
+  document.title = (data.owner || "모아보기");
+  $("brand").textContent = data.owner || "모아보기";
+  $("title").innerHTML = esc(data.title || "").replace(/\n/g, "<br>");
+  $("intro").textContent = data.intro || "";
+  $("kicker").textContent = `Field guide · ${two(cards.length)} entries`;
+  const years = cards.map((c) => (c.date || "").slice(0, 4)).filter(Boolean).sort();
+  $("stamp").textContent = `No. ${two(cards.length)}${years.length ? ` · ${years[years.length - 1]}` : ""}`;
+
+  // 오래된 것이 01. 늘어나도 번호가 바뀌지 않는다.
+  const numbered = cards
+    .map((c, i) => ({ ...c, i }))
+    .sort((a, b) => (a.date || "").localeCompare(b.date || "") || a.i - b.i)
+    .map((c, n) => ({ ...c, no: n + 1 }))
+    .sort((a, b) => (b.date || "").localeCompare(a.date || "") || b.no - a.no);
+
+  const tags = [...new Set(cards.flatMap((c) => c.tags || []))];
+  let tag = "";
+  let query = new URLSearchParams(location.search).get("q") || "";
+  $("q").value = query;
+
+  const tagBox = $("tags");
+  const drawTags = () => {
+    tagBox.innerHTML = tags.length > 1 ? ["", ...tags].map((t) => `<button type="button" data-tag="${esc(t)}" aria-pressed="${t === tag}">${esc(t || "전체")}</button>`).join("") : "";
+  };
+  tagBox.addEventListener("click", (e) => {
+    const b = e.target.closest("button");
+    if (!b) return;
+    tag = b.dataset.tag;
+    drawTags();
+    draw();
+  });
+
+  const fits = (c) => {
+    if (tag && !(c.tags || []).includes(tag)) return false;
+    const hay = [c.title, c.note, (c.tags || []).join(" "), host(c.url)].join(" ").toLowerCase().replace(/\s+/g, "");
+    return query.toLowerCase().split(/\s+/).filter(Boolean).every((w) => hay.includes(w));
+  };
+
+  const seen = "IntersectionObserver" in window ? new IntersectionObserver((list) => {
+    for (const one of list) if (one.isIntersecting) { one.target.classList.add("in"); seen.unobserve(one.target); }
+  }, { rootMargin: "0px 0px -8% 0px" }) : null;
+
+  const draw = () => {
+    const shown = numbered.filter(fits);
+    $("count").textContent = shown.length === cards.length ? `${two(cards.length)} entries` : `${two(shown.length)} / ${two(cards.length)}`;
+    $("grid").innerHTML = shown.map((c) => {
+      const [a, b] = tone(c.title);
+      const blank = `<span class="blank" style="background:linear-gradient(160deg,${a},${b})">${esc([...c.title][0] || "·")}</span>`;
+      const img = c.image ? `<img src="${esc(safe(c.image))}" alt="" loading="lazy" referrerpolicy="no-referrer" data-a="${a}" data-b="${b}" data-ch="${esc([...c.title][0] || "·")}">` : blank;
+      return `<a class="card" href="${esc(safe(c.url))}" target="_blank" rel="noopener noreferrer">
+        <figure class="fig">${img}</figure>
+        <div class="cap"><span class="label">Fig. ${two(c.no)}</span><span class="label">${esc((c.tags || [])[0] || host(c.url))}</span></div>
+        <h2>${esc(c.title)}</h2>
+        ${c.note ? `<p>${esc(c.note)}</p>` : ""}
+        <div class="foot"><span>${esc(host(c.url))}${c.date ? ` · ${esc(c.date.slice(0, 7).replace("-", "."))}` : ""}</span><b>열기 ↗</b></div>
+      </a>`;
+    }).join("");
+    const none = $("none");
+    none.hidden = shown.length > 0;
+    none.textContent = query ? `「${query}」 에 맞는 카드가 없어요.` : "아직 카드가 없어요.";
+    $("clear").hidden = !query;
+    document.querySelectorAll(".card").forEach((el) => seen ? seen.observe(el) : el.classList.add("in"));
+    // 섬네일을 못 받으면(지워졌거나 막혔으면) 빛깔 카드로 바꾼다.
+    document.querySelectorAll(".fig img").forEach((im) => im.addEventListener("error", () => {
+      const span = document.createElement("span");
+      span.className = "blank";
+      span.style.background = `linear-gradient(160deg,${im.dataset.a},${im.dataset.b})`;
+      span.textContent = im.dataset.ch;
+      im.replaceWith(span);
+    }, { once: true }));
+  };
+
+  $("q").addEventListener("input", (e) => {
+    query = e.target.value;
+    const url = new URL(location.href);
+    if (query.trim()) url.searchParams.set("q", query.trim()); else url.searchParams.delete("q");
+    history.replaceState(null, "", url);
+    draw();
+  });
+  $("clear").addEventListener("click", () => {
+    $("q").value = "";
+    $("q").dispatchEvent(new Event("input"));
+    $("q").focus();
+  });
+
+  drawTags();
+  draw();
+})();
+</script>
+</body>
+</html>
