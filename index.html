@@ -3,10 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>내가 만든 것 모아보기</title>
+<title>patrol_jev 앱 모아보기</title>
 <meta name="description" content="흩어져 있던 링크를 섬네일 한 장씩 카드로 모았습니다.">
+<meta name="generator" content="link-cards by patrol_jev — https://github.com/patrol-jev/link-cards">
+<link rel="author" href="https://www.threads.com/@patrol_jev">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","isBasedOn":{"@type":"SoftwareSourceCode","name":"link-cards","description":"흩어진 링크를 섬네일 한 장씩 카드로 모아 주는 한 장짜리 페이지","codeRepository":"https://github.com/patrol-jev/link-cards","license":"https://opensource.org/licenses/MIT","author":{"@type":"Person","name":"patrol_jev","url":"https://www.threads.com/@patrol_jev"}}}
+</script>
 <!--
-  link-cards · 한 장짜리 카드 모아보기
+  link-cards · 한 장짜리 카드 모아보기 · 원작 patrol_jev (https://github.com/patrol-jev/link-cards)
+  - 맨 아래 「Made with link-cards · by patrol_jev」 한 줄과 위의 generator · ld+json 은 지우지 말아 주세요. 그것만 남기면 마음대로 고쳐 써도 됩니다.
   - 이 파일 하나가 전부입니다. 빌드도, 라이브러리도, 서버도 없습니다. 더블클릭하면 열립니다.
   - 카드 자료는 맨 아래 <script id="cards"> 안의 JSON 한 덩어리입니다. 고칠 곳은 거기뿐입니다.
   - 자료를 채우는 법은 SKILL.md(Claude 에게) · README.md(사람에게)에 있습니다.
@@ -38,6 +44,7 @@
     }
   }
   * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
   html { scroll-behavior: smooth; }
   body {
     margin: 0;
@@ -110,6 +117,35 @@
     font-variant-numeric: tabular-nums;
   }
   .bar .label { margin-left: auto; }
+
+  .flip {
+    height: 32px;
+    padding: 0 14px;
+    border: 1px solid var(--hair);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--ink);
+    font: inherit;
+    font-size: 13px;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background .2s, color .2s;
+  }
+  .flip[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .make {
+    justify-self: start;
+    display: inline-flex;
+    align-items: center;
+    height: 44px;
+    padding: 0 20px;
+    border-radius: 24px;
+    background: var(--ink);
+    color: var(--paper);
+    font-size: 15px;
+    text-decoration: none;
+  }
+  .credit { text-transform: none; letter-spacing: .04em; }
+  .credit a { color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--hair); }
 
   /* 첫 판 */
   .hero {
@@ -361,12 +397,14 @@
   <header class="bar">
     <a class="brand" href="./"><i>✳</i><span id="brand"></span></a>
     <span class="label" id="stamp"></span>
+    <button class="flip" id="flip" type="button" hidden></button>
   </header>
 
   <section class="hero">
     <span class="label kicker" id="kicker"></span>
     <h1 id="title"></h1>
     <p class="intro" id="intro"></p>
+    <a class="make" id="make" href="https://github.com/patrol-jev/link-cards" rel="noopener">이 판으로 내 것 만들기 ↗</a>
     <label class="find">
       <span class="label">찾기</span>
       <input id="q" type="search" placeholder="이름이나 하는 일로 찾기" autocomplete="off" enterkeyhint="search" aria-label="찾기">
@@ -384,13 +422,15 @@
   <p class="none" id="none" hidden></p>
 
   <footer class="folio">
-    <span class="label">Made with link-cards</span>
+    <span class="label credit">Made with <a href="https://github.com/patrol-jev/link-cards" rel="noopener">link-cards</a> · by <a href="https://www.threads.com/@patrol_jev" rel="noopener author">patrol_jev</a></span>
     <span class="label">01 / 01</span>
   </footer>
 </div>
 
 <!--
   ↓↓↓ 카드 자료. 고칠 곳은 여기뿐입니다. ↓↓↓
+  지금 들어 있는 것은 원작자(patrol_jev)의 앱 20개, 기본 예시입니다("example": true).
+  내 것으로 바꿀 때는 cards 를 내 링크로 바꾸고, title · owner · intro 는 아래 빈 판(starter)의 것을 가져와 고친 뒤 "example" 줄을 지웁니다.
   title  : 맨 위 큰 제목 (줄바꿈은 \n)
   owner  : 머리 왼쪽 이름
   intro  : 제목 아래 한두 줄
@@ -405,9 +445,229 @@
 -->
 <script id="cards" type="application/json">
 {
+  "example": true,
+  "title": "스레드에 올린 앱,\n한 장씩 모았어요",
+  "owner": "patrol_jev 앱 모아보기",
+  "intro": "스레드 @patrol_jev 에 올린 것 중 사이트에서 돌아가는 앱 20개예요. 최근 것부터 놓았어요. 이름이나 하는 일로 찾아보세요.",
+  "cards": [
+    {
+      "url": "https://patrol.ai.kr/agree",
+      "title": "조율 에이전트",
+      "note": "직접 말하기 애매한 일을 AI가 사이에서 조율해 줘요. 초대장이 있어야 들어가요.",
+      "image": "thumbs/agree.jpg",
+      "tags": [
+        "대화"
+      ],
+      "date": "2026-11-21"
+    },
+    {
+      "url": "https://patrol.ai.kr/world/life",
+      "title": "내 인생 시뮬레이션",
+      "note": "같은 자리에서 출발한 가상의 24명이 10년을 대신 살아 봐요.",
+      "image": "thumbs/world-life.jpg",
+      "tags": [
+        "놀이"
+      ],
+      "date": "2026-11-21"
+    },
+    {
+      "url": "https://patrol.ai.kr/world",
+      "title": "무심코 뱉은 말",
+      "note": "보낼 말 한 줄을 세계 곳곳 가상 인물 24명이 어떻게 듣는지 세어 봐요.",
+      "image": "thumbs/world.jpg",
+      "tags": [
+        "대화"
+      ],
+      "date": "2026-11-20"
+    },
+    {
+      "url": "https://patrol.ai.kr/snow",
+      "title": "제설함 지도",
+      "note": "주소를 찾으면 가까운 제설함과 미끄럼 주의 구간이 입체 지도에 떠요.",
+      "image": "",
+      "tags": [
+        "업무",
+        "지도"
+      ],
+      "date": "2026-11-18"
+    },
+    {
+      "url": "https://patrol.ai.kr/drive/autumn",
+      "title": "가을 운전",
+      "note": "은행나무 길을 달리면 낙엽이 앞유리에 쏟아져요. 소리 켜고 페달.",
+      "image": "thumbs/drive-autumn.jpg",
+      "tags": [
+        "놀이"
+      ],
+      "date": "2026-11-16"
+    },
+    {
+      "url": "https://patrol.ai.kr/drive",
+      "title": "운전",
+      "note": "실제 터널 영상으로 해 보는 가상 운전대. 직진부터 연습해요.",
+      "image": "thumbs/drive.jpg",
+      "tags": [
+        "놀이"
+      ],
+      "date": "2026-11-15"
+    },
+    {
+      "url": "https://patrol.ai.kr/glass-eye",
+      "title": "안경 눈",
+      "note": "안경을 비추면 렌즈 · 단자 · 구멍을 찾아 스마트 안경인지 알려 줘요.",
+      "image": "thumbs/glass-eye.jpg",
+      "tags": [
+        "카메라"
+      ],
+      "date": "2026-11-14"
+    },
+    {
+      "url": "https://patrol.ai.kr/yard",
+      "title": "마당",
+      "note": "읽은 순찰 사진만큼 내 터가 자라요. 말은 없어요.",
+      "image": "thumbs/yard.jpg",
+      "tags": [
+        "업무"
+      ],
+      "date": "2026-11-13"
+    },
+    {
+      "url": "https://patrol.ai.kr/trash",
+      "title": "대형폐기물 신고서",
+      "note": "버릴 물건을 찍으면 품목 · 규격 · 수수료를 골라 신고서를 채워요.",
+      "image": "thumbs/trash.jpg",
+      "tags": [
+        "업무"
+      ],
+      "date": "2026-11-12"
+    },
+    {
+      "url": "https://patrol.ai.kr/sky",
+      "title": "동네 하늘",
+      "note": "기상청 예보로 우리 동네 하늘을 그려요. 눈 · 비가 오면 알려 줘요.",
+      "image": "",
+      "tags": [
+        "동네",
+        "지도"
+      ],
+      "date": "2026-11-08"
+    },
+    {
+      "url": "https://patrol.ai.kr/bap",
+      "title": "같이 혼밥",
+      "note": "혼밥인데 혼자 아님. 같은 메뉴를 고른 사람과 한 테이블에 앉아요.",
+      "image": "thumbs/bap.jpg",
+      "tags": [
+        "놀이"
+      ],
+      "date": "2026-11-07"
+    },
+    {
+      "url": "https://patrol.ai.kr/seoul",
+      "title": "서울 오늘 하나",
+      "note": "구청 소식 중 나한테 맞는 것 하나만, 해당되는 날 아침에 알려 줘요.",
+      "image": "",
+      "tags": [
+        "동네"
+      ],
+      "date": "2026-11-06"
+    },
+    {
+      "url": "https://patrol.ai.kr/hazard",
+      "title": "위험 눈",
+      "note": "카메라를 들고 걷기만 하면 보이는 물건에 이름이, 위험한 것엔 점수가 붙어요.",
+      "image": "thumbs/hazard.jpg",
+      "tags": [
+        "업무",
+        "카메라"
+      ],
+      "date": "2026-11-05"
+    },
+    {
+      "url": "https://patrol.ai.kr/nyang",
+      "title": "냥월드",
+      "note": "카메라로 보면 사람은 고양이가 되고, 물건은 다 장난감이 돼요.",
+      "image": "thumbs/nyang.jpg",
+      "tags": [
+        "카메라",
+        "놀이"
+      ],
+      "date": "2026-11-04"
+    },
+    {
+      "url": "https://patrol.ai.kr/erase",
+      "title": "손끝 지우개",
+      "note": "비우고 싶은데 안 지워지는 것. 카메라 앞에서 검지로 한 바퀴 돌리면 지워져요.",
+      "image": "thumbs/erase.jpg",
+      "tags": [
+        "카메라",
+        "놀이"
+      ],
+      "date": "2026-11-03"
+    },
+    {
+      "url": "https://patrol.ai.kr/house",
+      "title": "멍냥이네",
+      "note": "우리 집 고양이 · 강아지를 데리고 들어가 다 같이 사는 집.",
+      "image": "thumbs/house.jpg",
+      "tags": [
+        "놀이"
+      ],
+      "date": "2026-11-01"
+    },
+    {
+      "url": "https://patrol.ai.kr/kids",
+      "title": "AI 유치원",
+      "note": "아이랑 같이 절하면 이야기가 이어지는 유치원이에요.",
+      "image": "thumbs/kids.jpg",
+      "tags": [
+        "놀이"
+      ],
+      "date": "2026-11-01"
+    },
+    {
+      "url": "https://patrol.ai.kr/hall",
+      "title": "결재사",
+      "note": "무슨 말을 해도 hwpx 로 들리는 공무원용 법당.",
+      "image": "thumbs/hall.jpg",
+      "tags": [
+        "놀이"
+      ],
+      "date": "2026-10-30"
+    },
+    {
+      "url": "https://patrol.ai.kr/risk",
+      "title": "위험 일지",
+      "note": "현장 사진을 바구니에 넣어 두면 저녁 6시에 위험도가 매겨져요.",
+      "image": "thumbs/risk.jpg",
+      "tags": [
+        "업무"
+      ],
+      "date": "2026-10-30"
+    },
+    {
+      "url": "https://patrol.ai.kr/tone",
+      "title": "보고서 색",
+      "note": "글을 넣으면 보고서의 색이 나와요. 글은 기기 밖으로 나가지 않아요.",
+      "image": "thumbs/tone.jpg",
+      "tags": [
+        "업무"
+      ],
+      "date": "2026-10-29"
+    }
+  ]
+}
+</script>
+
+<!--
+  빈 판. 머리의 「빈 판 보기」 를 한 번 누르면 이것이 보입니다(주소 ?starter=1).
+  내 것을 만들 때도 그대로 둡니다. 내 페이지를 본 사람이 「나도 만들기」 로 가는 길입니다.
+-->
+<script id="starter" type="application/json">
+{
   "title": "흩어져 있던 것을\n한 장씩 모았어요",
   "owner": "내 도구 모아보기",
-  "intro": "만든 것, 써 본 것, 적어 둔 것. 링크마다 섬네일 한 장으로 정리했어요. 이름이나 하는 일로 찾아보세요.",
+  "intro": "만든 것, 써 본 것, 적어 둔 것. 링크마다 섬네일 한 장으로 정리했어요. 이 판을 내려받아 Claude 에게 내 링크를 주면 내 것이 돼요.",
   "cards": [
     { "url": "https://example.com/photo-log", "title": "사진 한 장으로 일지 쓰기", "note": "현장 사진을 올리면 날짜와 장소를 읽어 일지 한 줄을 써 줘요.", "image": "", "tags": ["업무", "사진"], "date": "2026-09-23" },
     { "url": "https://example.com/meal-sheet", "title": "영수증으로 식비 장부", "note": "영수증을 찍으면 날짜 · 금액 · 인원이 표로 쌓여요.", "image": "", "tags": ["업무", "엑셀"], "date": "2026-10-08" },
@@ -421,8 +681,6 @@
 
 <script>
 (() => {
-  const data = JSON.parse(document.getElementById("cards").textContent);
-  const cards = (data.cards || []).filter((c) => c && c.url && c.title);
   const $ = (id) => document.getElementById(id);
   const two = (n) => String(n).padStart(2, "0");
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[ch]);
@@ -430,30 +688,53 @@
   const safe = (url) => /^https?:\/\//i.test(url) ? url : "#";
   // 섬네일은 https 주소이거나, 이 파일 옆 폴더의 그림(thumbs/xx.jpg)이다.
   const safeImg = (src) => /^https?:\/\//i.test(src) || (/^(\.\/)?[\w-]+(\/[\w-]+)*\.(jpe?g|png|webp|gif|avif)$/i.test(src)) ? src : "";
+  const read = (id) => { try { return JSON.parse($(id)?.textContent || "null"); } catch { return null; } };
 
   // 섬네일이 없는 카드의 빛깔. 이름으로 고르니 늘 같은 빛깔이 나온다.
   const TONES = [["#3a4736", "#82906a"], ["#27425f", "#e9b58c"], ["#4b5a75", "#f2c58f"], ["#0d3644", "#8fd0c8"], ["#4a3556", "#f3b6a6"], ["#32160f", "#f08a4b"], ["#587fa2", "#e9f1f6"], ["#243128", "#aebd71"]];
   const tone = (text) => { let sum = 0; for (const ch of text) sum = (sum * 31 + ch.codePointAt(0)) % 100003; return TONES[sum % TONES.length]; };
 
-  document.title = (data.owner || "모아보기");
-  $("brand").textContent = data.owner || "모아보기";
-  $("title").innerHTML = esc(data.title || "").replace(/\n/g, "<br>");
-  $("intro").textContent = data.intro || "";
-  $("kicker").textContent = `Field guide · ${two(cards.length)} entries`;
-  const years = cards.map((c) => (c.date || "").slice(0, 4)).filter(Boolean).sort();
-  $("stamp").textContent = `No. ${two(cards.length)}${years.length ? ` · ${years[years.length - 1]}` : ""}`;
-
-  // 오래된 것이 01. 늘어나도 번호가 바뀌지 않는다.
-  const numbered = cards
-    .map((c, i) => ({ ...c, i }))
-    .sort((a, b) => (a.date || "").localeCompare(b.date || "") || a.i - b.i)
-    .map((c, n) => ({ ...c, no: n + 1 }))
-    .sort((a, b) => (b.date || "").localeCompare(a.date || "") || b.no - a.no);
-
-  const tags = [...new Set(cards.flatMap((c) => c.tags || []))];
+  const main = read("cards") || { cards: [] };
+  const starter = read("starter");
+  let blank = Boolean(starter) && new URLSearchParams(location.search).get("starter") === "1";
+  let data, cards, numbered, tags;
   let tag = "";
   let query = new URLSearchParams(location.search).get("q") || "";
   $("q").value = query;
+
+  const setUrl = () => {
+    const url = new URL(location.href);
+    if (query.trim()) url.searchParams.set("q", query.trim()); else url.searchParams.delete("q");
+    if (blank) url.searchParams.set("starter", "1"); else url.searchParams.delete("starter");
+    history.replaceState(null, "", url);
+  };
+
+  // 한 판을 통째로 그린다. 기본 판과 빈 판을 오갈 때 다시 부른다.
+  const load = () => {
+    data = blank ? starter : main;
+    cards = (data.cards || []).filter((c) => c && c.url && c.title);
+    document.title = data.owner || "모아보기";
+    $("brand").textContent = data.owner || "모아보기";
+    $("title").innerHTML = esc(data.title || "").replace(/\n/g, "<br>");
+    $("intro").textContent = data.intro || "";
+    $("kicker").textContent = `Field guide · ${two(cards.length)} entries`;
+    const years = cards.map((c) => (c.date || "").slice(0, 4)).filter(Boolean).sort();
+    $("stamp").textContent = `No. ${two(cards.length)}${years.length ? ` · ${years[years.length - 1]}` : ""}`;
+    const flip = $("flip");
+    flip.hidden = !starter;
+    flip.textContent = blank ? "예시로 돌아가기" : "빈 판 보기";
+    flip.setAttribute("aria-pressed", String(blank));
+    // 오래된 것이 01. 늘어나도 번호가 바뀌지 않는다.
+    numbered = cards
+      .map((c, i) => ({ ...c, i }))
+      .sort((a, b) => (a.date || "").localeCompare(b.date || "") || a.i - b.i)
+      .map((c, n) => ({ ...c, no: n + 1 }))
+      .sort((a, b) => (b.date || "").localeCompare(a.date || "") || b.no - a.no);
+    tags = [...new Set(cards.flatMap((c) => c.tags || []))];
+    tag = "";
+    drawTags();
+    draw();
+  };
 
   const tagBox = $("tags");
   const drawTags = () => {
@@ -482,8 +763,10 @@
     $("count").textContent = shown.length === cards.length ? `${two(cards.length)} entries` : `${two(shown.length)} / ${two(cards.length)}`;
     $("grid").innerHTML = shown.map((c) => {
       const [a, b] = tone(c.title);
-      const blank = `<span class="blank" style="background:linear-gradient(160deg,${a},${b})">${esc([...c.title][0] || "·")}</span>`;
-      const img = safeImg(c.image || "") ? `<img src="${esc(safeImg(c.image))}" alt="" loading="lazy" referrerpolicy="no-referrer" data-a="${a}" data-b="${b}" data-ch="${esc([...c.title][0] || "·")}">` : blank;
+      const ch = esc([...c.title][0] || "·");
+      const blankTile = `<span class="blank" style="background:linear-gradient(160deg,${a},${b})">${ch}</span>`;
+      const src = safeImg(c.image || "");
+      const img = src ? `<img src="${esc(src)}" alt="" loading="lazy" referrerpolicy="no-referrer" data-a="${a}" data-b="${b}" data-ch="${ch}">` : blankTile;
       return `<a class="card" href="${esc(safe(c.url))}" target="_blank" rel="noopener noreferrer">
         <figure class="fig">${img}</figure>
         <div class="cap"><span class="label">Fig. ${two(c.no)}</span><span class="label">${esc((c.tags || [])[0] || host(c.url))}</span></div>
@@ -509,9 +792,7 @@
 
   $("q").addEventListener("input", (e) => {
     query = e.target.value;
-    const url = new URL(location.href);
-    if (query.trim()) url.searchParams.set("q", query.trim()); else url.searchParams.delete("q");
-    history.replaceState(null, "", url);
+    setUrl();
     draw();
   });
   $("clear").addEventListener("click", () => {
@@ -519,9 +800,16 @@
     $("q").dispatchEvent(new Event("input"));
     $("q").focus();
   });
+  $("flip").addEventListener("click", () => {
+    blank = !blank;
+    query = "";
+    $("q").value = "";
+    setUrl();
+    load();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
 
-  drawTags();
-  draw();
+  load();
 })();
 </script>
 </body>

@@ -5,6 +5,7 @@
 
 - 파일 하나(`index.html`)가 전부입니다. 설치할 것도, 서버도 없습니다.
 - 코드를 몰라도 됩니다. Claude 에게 링크를 주고 부탁하면 됩니다.
+- 처음 열면 원작자 [patrol_jev](https://www.threads.com/@patrol_jev) 의 앱 20개가 예시로 보입니다. 위의 **빈 판 보기** 를 누르면 내 것을 만들 빈 판이 보입니다.
 
 ---
 
@@ -73,6 +74,10 @@ node tools/read-links.mjs
 - 그림은 원래 사이트에서 바로 불러옵니다. 그 사이트가 그림을 지우거나 막으면 빛깔 카드로 바뀝니다.
 - 사내 주소 · `localhost` 는 읽지 않습니다. 공개해도 되는 링크만 넣어 주세요.
 
+## 크레딧
+
+link-cards 는 [patrol_jev](https://www.threads.com/@patrol_jev) 가 처음 만들었습니다. 마음대로 고쳐 쓰셔도 되고, 페이지 맨 아래 **Made with link-cards · by patrol_jev** 한 줄만 남겨 주세요.
+
 ## 라이선스
 
-MIT
+MIT · © 2026 patrol_jev

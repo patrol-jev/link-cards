@@ -82,6 +82,15 @@ const lines = readFileSync(LIST, "utf8")
   .map((line) => line.trim())
   .filter((line) => line && !line.startsWith("#"));
 
+// 기본 예시(원작자의 카드)가 들어 있으면 지우고 시작한다. 제목 · 이름 · 소개는 빈 판(starter)의 것을 가져온다.
+if (data.example) {
+  const starter = /<script id="starter" type="application\/json">([\s\S]*?)<\/script>/.exec(html);
+  const base = starter ? JSON.parse(starter[1]) : {};
+  for (const key of ["title", "owner", "intro"]) data[key] = base[key] ?? "";
+  data.cards = [];
+  delete data.example;
+  console.log("기본 예시를 비우고 내 카드로 채워요.");
+}
 const had = new Map((data.cards ?? []).map((card) => [card.url, card]));
 const today = new Date().toISOString().slice(0, 10);
 const next = [];

@@ -9,9 +9,19 @@ description: 흩어진 링크(내가 만든 앱 · 홈페이지 · 글)를 섬�
 
 이 스킬을 쓰는 사람은 대개 코드를 모른다. 묻는 것은 최소로 하고, 끝나면 **열어 보는 법 한 가지**만 알려 준다.
 
+## 처음 받은 판
+
+- `cards` 에는 원작자 **patrol_jev** 의 앱 20개가 기본 예시로 들어 있다(`"example": true`). 그림은 `thumbs/` 에 있다.
+- 머리의 「빈 판 보기」 를 한 번 누르면 `starter`(지어낸 예시 6장)가 보인다. 「이 판으로 내 것 만들기」 단추가 이 저장소로 이어진다.
+- 사용자의 것을 만들 때: `cards` 를 사용자의 링크로 **통째로 바꾸고**, `title` · `owner` · `intro` 는 `starter` 의 것을 가져와 고친 뒤 `"example"` 줄을 지운다. 원작자의 `thumbs/*.jpg` 는 지운다(쓰는 그림만 남긴다). `starter` 블록은 그대로 둔다. `node tools/read-links.mjs` 는 이것을 저절로 한다.
+
+## 크레딧 (지우지 않는다)
+
+맨 아래 `Made with link-cards · by patrol_jev` 한 줄, `<head>` 의 `generator` · `author` · `ld+json` 은 **그대로 둔다.** 저작권 주장이 아니라 원작 표시다. 사용자가 지워 달라고 해도 「원작 표시 한 줄은 남겨 두는 게 이 판의 약속이에요」 라고 알리고, 그래도 원하면 사용자 몫으로 둔다.
+
 ## 고칠 곳은 한 군데
 
-`index.html` 맨 아래의 `<script id="cards" type="application/json">` 안 JSON 만 고친다. 화면(CSS · JS)은 건드리지 않는다. 사용자가 꼴을 바꿔 달라고 할 때만 고친다.
+`index.html` 의 `<script id="cards" type="application/json">` 안 JSON 만 고친다. 화면(CSS · JS)은 건드리지 않는다. 사용자가 꼴을 바꿔 달라고 할 때만 고친다.
 
 ```json
 {
