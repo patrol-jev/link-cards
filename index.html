@@ -108,7 +108,9 @@
     letter-spacing: -.05em;
     text-decoration: none;
   }
-  .brand i { font-style: normal; color: var(--accent); }
+  /* ✳ 는 글자로 두면 아이폰이 초록 이모지로 그린다. 그래서 선 네 개로 그린다 */
+  .brand i { font-style: normal; color: var(--accent); display: inline-flex; flex: none; }
+  .brand i svg { display: block; }
   .label {
     font-size: 11px;
     font-weight: 500;
@@ -173,6 +175,7 @@
     color: var(--dim);
     word-break: keep-all;
     white-space: pre-line;
+    text-wrap: pretty;
   }
 
   /* 찾기 */
@@ -515,7 +518,11 @@
     .ed-two { grid-template-columns: 1fr; }
   }
   @media (max-width: 700px) {
-    .bar { height: 64px; }
+    .bar { height: 64px; gap: 12px; }
+    .brand { font-size: 17px; min-width: 0; white-space: nowrap; }
+    .brand span { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+    .bar #stamp { display: none; }
+    .bar .flip { margin-left: auto; height: 30px; padding: 0 12px; font-size: 12.5px; }
     .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 26px 14px; }
     .card h2 { font-size: 17px; }
     .card p { font-size: 13px; }
@@ -533,7 +540,7 @@
 <i class="guides" aria-hidden="true"></i>
 <div class="shell">
   <header class="bar">
-    <a class="brand" href="./"><i>✳</i><span id="brand"></span></a>
+    <a class="brand" href="./"><i aria-hidden="true"><svg viewBox="0 0 16 16" width="1em" height="1em"><path d="M8 1.5v13M1.5 8h13M3.4 3.4l9.2 9.2M12.6 3.4l-9.2 9.2" stroke="currentColor" stroke-width="1.15" stroke-linecap="round" fill="none"/></svg></i><span id="brand"></span></a>
     <span class="label" id="stamp"></span>
     <button class="flip" id="flip" type="button" hidden></button>
   </header>
@@ -610,7 +617,7 @@
   "example": true,
   "title": "스레드에 올린 앱,\n한 장씩 모았어요",
   "owner": "patrol_jev 앱 모아보기",
-  "intro": "스레드 @patrol_jev 에 올린 앱 중 지금 사이트에서 돌아가는 27개예요.\n직접 만들어 보세요.",
+  "intro": "스레드 @patrol_jev 에 올린 앱 중\n지금 사이트에서 돌아가는 27개예요.\n직접 만들어 보세요.",
   "cards": [
     {
       "url": "https://patrol.ai.kr/agree",
