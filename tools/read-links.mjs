@@ -82,7 +82,7 @@ const lines = readFileSync(LIST, "utf8")
   .map((line) => line.trim())
   .filter((line) => line && !line.startsWith("#"));
 
-// 기본 예시(원작자의 카드)가 들어 있으면 지우고 시작한다. 제목 · 이름 · 소개는 빈 판(starter)의 것을 가져온다.
+// 기본 예시(원작자의 카드)가 들어 있으면 지우고 시작한다. 제목 · 이름 · 소개는 빈 예시(starter)의 것을 가져온다.
 if (data.example) {
   const starter = /<script id="starter" type="application\/json">([\s\S]*?)<\/script>/.exec(html);
   const base = starter ? JSON.parse(starter[1]) : {};

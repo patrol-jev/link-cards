@@ -148,7 +148,7 @@
   .credit { text-transform: none; letter-spacing: .04em; }
   .credit a { color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--hair); }
 
-  /* 첫 판 */
+  /* 첫 화면 */
   .hero {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
@@ -370,6 +370,26 @@
     color: var(--dim);
     font-size: 17px;
   }
+  /* 쪽 넘기기: 20장씩 */
+  .pager {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 22px;
+    margin-top: 46px;
+  }
+  .pager button {
+    height: 40px;
+    padding: 0 18px;
+    border: 1px solid var(--hair);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--ink);
+    font: inherit;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  .pager button:disabled { opacity: .3; cursor: default; }
   .folio {
     display: flex;
     justify-content: space-between;
@@ -405,7 +425,7 @@
     <span class="label kicker" id="kicker"></span>
     <h1 id="title"></h1>
     <p class="intro" id="intro"></p>
-    <a class="make" id="make" href="https://github.com/patrol-jev/link-cards" rel="noopener">이 판으로 내 것 만들기 ↗</a>
+    <a class="make" id="make" href="https://github.com/patrol-jev/link-cards" rel="noopener">내 것 만들기 ↗</a>
     <label class="find">
       <span class="label">찾기</span>
       <input id="q" type="search" placeholder="이름이나 하는 일로 찾기" autocomplete="off" enterkeyhint="search" aria-label="찾기">
@@ -421,17 +441,22 @@
   </div>
   <main class="grid" id="grid"></main>
   <p class="none" id="none" hidden></p>
+  <nav class="pager" id="pager" aria-label="쪽 넘기기" hidden>
+    <button type="button" id="prev">← 이전</button>
+    <span class="label" id="pageno"></span>
+    <button type="button" id="next">다음 →</button>
+  </nav>
 
   <footer class="folio">
     <span class="label credit" id="credit">Made with <a href="https://github.com/patrol-jev/link-cards" rel="noopener">link-cards</a> · by <a href="https://www.threads.com/@patrol_jev" rel="noopener author">patrol_jev</a></span>
-    <span class="label">01 / 01</span>
+    <span class="label" id="folio">01 / 01</span>
   </footer>
 </div>
 
 <!--
   ↓↓↓ 카드 자료. 고칠 곳은 여기뿐입니다. ↓↓↓
   지금 들어 있는 것은 원작자(patrol_jev)의 앱 20개, 기본 예시입니다("example": true).
-  내 것으로 바꿀 때는 cards 를 내 링크로 바꾸고, title · owner · intro 는 아래 빈 판(starter)의 것을 가져와 고친 뒤 "example" 줄을 지웁니다.
+  내 것으로 바꿀 때는 cards 를 내 링크로 바꾸고, title · owner · intro 는 아래 빈 예시(starter)의 것을 가져와 고친 뒤 "example" 줄을 지웁니다.
   title  : 맨 위 큰 제목 (줄바꿈은 \n)
   owner  : 머리 왼쪽 이름
   intro  : 제목 아래 한두 줄
@@ -450,7 +475,7 @@
   "example": true,
   "title": "스레드에 올린 앱,\n한 장씩 모았어요",
   "owner": "patrol_jev 앱 모아보기",
-  "intro": "스레드 @patrol_jev 에 올린 것 중 사이트에서 돌아가는 앱 20개예요. 최근 것부터 놓았어요. 이름이나 하는 일로 찾아보세요.",
+  "intro": "스레드 @patrol_jev 에 올린 앱 중 지금 사이트에서 돌아가는 29개예요. 최근 것부터 20개씩 넘겨 봐요. 이름이나 하는 일로 찾아보세요.",
   "cards": [
     {
       "url": "https://patrol.ai.kr/agree",
@@ -575,6 +600,17 @@
       "date": "2026-11-06"
     },
     {
+      "url": "https://patrol.ai.kr/meta",
+      "title": "메타의 메타",
+      "note": "사진 한 장이면 얼굴은 고양이, 옷은 그대로예요.",
+      "image": "",
+      "tags": [
+        "카메라",
+        "놀이"
+      ],
+      "date": "2026-11-06"
+    },
+    {
       "url": "https://patrol.ai.kr/hazard",
       "title": "위험 눈",
       "note": "카메라를 들고 걷기만 하면 보이는 물건에 이름이, 위험한 것엔 점수가 붙어요.",
@@ -638,16 +674,6 @@
       "date": "2026-10-30"
     },
     {
-      "url": "https://patrol.ai.kr/risk",
-      "title": "위험 일지",
-      "note": "현장 사진을 바구니에 넣어 두면 저녁 6시에 위험도가 매겨져요.",
-      "image": "thumbs/risk.jpg",
-      "tags": [
-        "업무"
-      ],
-      "date": "2026-10-30"
-    },
-    {
       "url": "https://patrol.ai.kr/tone",
       "title": "보고서 색",
       "note": "글을 넣으면 보고서의 색이 나와요. 글은 기기 밖으로 나가지 않아요.",
@@ -656,20 +682,110 @@
         "업무"
       ],
       "date": "2026-10-29"
+    },
+    {
+      "url": "https://patrol.ai.kr/team",
+      "title": "현장방",
+      "note": "근로자가 같이 위험을 찾고 정하는 단톡방. 기록이 위험성평가표(hwpx)가 돼요.",
+      "image": "thumbs/team.jpg",
+      "tags": [
+        "업무"
+      ],
+      "date": "2026-10-24"
+    },
+    {
+      "url": "https://patrol.ai.kr/bunring",
+      "title": "심해",
+      "note": "위로 쓸어 올리면 바다 밑으로 내려가요. 끝은 10,898m.",
+      "image": "thumbs/bunring.jpg",
+      "tags": [
+        "놀이"
+      ],
+      "date": "2026-10-23"
+    },
+    {
+      "url": "https://patrol.ai.kr/risk",
+      "title": "위험 일지",
+      "note": "현장 사진을 바구니에 넣어 두면 저녁 6시에 위험도가 매겨져요.",
+      "image": "thumbs/risk.jpg",
+      "tags": [
+        "업무"
+      ],
+      "date": "2026-10-17"
+    },
+    {
+      "url": "https://patrol.ai.kr/photolog",
+      "title": "사진일지",
+      "note": "제목을 적고 사진을 올리면 보고서에 붙일 사진 표가 나와요.",
+      "image": "",
+      "tags": [
+        "업무"
+      ],
+      "date": "2026-10-05"
+    },
+    {
+      "url": "https://patrol.ai.kr/ring",
+      "title": "분링",
+      "note": "버리기 전에 찍으면 분리배출이 내 링에 쌓여요.",
+      "image": "thumbs/ring.jpg",
+      "tags": [
+        "동네"
+      ],
+      "date": "2026-10-04"
+    },
+    {
+      "url": "https://patrol.ai.kr/overtime",
+      "title": "초과기록",
+      "note": "오늘 초과 시간을 넣으면 누를 칸과 쓸 사유가 나와요.",
+      "image": "",
+      "tags": [
+        "업무"
+      ],
+      "date": "2026-10-01"
+    },
+    {
+      "url": "https://patrol.ai.kr/meal",
+      "title": "식권대장",
+      "note": "식권을 찍으면 식비 장부가 엑셀로 나와요. 사진은 기기 밖으로 안 나가요.",
+      "image": "",
+      "tags": [
+        "업무"
+      ],
+      "date": "2026-09-30"
+    },
+    {
+      "url": "https://patrol.ai.kr/report",
+      "title": "순찰 결과 보고서",
+      "note": "한 달 순찰 사진을 넣으면 결과 보고서가 hwpx 로 나와요.",
+      "image": "",
+      "tags": [
+        "업무"
+      ],
+      "date": "2026-09-26"
+    },
+    {
+      "url": "https://patrol.ai.kr/patrol",
+      "title": "순찰일지",
+      "note": "사진을 올리면 순찰일지 글이 나오고 hwpx 로 받아요.",
+      "image": "",
+      "tags": [
+        "업무"
+      ],
+      "date": "2026-09-21"
     }
   ]
 }
 </script>
 
 <!--
-  빈 판. 머리의 「빈 판 보기」 를 한 번 누르면 이것이 보입니다(주소 ?starter=1).
+  빈 예시. 머리의 「빈 예시 보기」 를 한 번 누르면 이것이 보입니다(주소 ?starter=1).
   내 것을 만들 때도 그대로 둡니다. 내 페이지를 본 사람이 「나도 만들기」 로 가는 길입니다.
 -->
 <script id="starter" type="application/json">
 {
   "title": "흩어져 있던 것을\n한 장씩 모았어요",
   "owner": "내 도구 모아보기",
-  "intro": "만든 것, 써 본 것, 적어 둔 것. 링크마다 섬네일 한 장으로 정리했어요. 이 판을 내려받아 Claude 에게 내 링크를 주면 내 것이 돼요.",
+  "intro": "만든 것, 써 본 것, 적어 둔 것. 링크마다 섬네일 한 장으로 정리했어요. 내려받아 Claude 에게 내 링크를 주면 내 것이 돼요.",
   "cards": [
     { "url": "https://example.com/photo-log", "title": "사진 한 장으로 일지 쓰기", "note": "현장 사진을 올리면 날짜와 장소를 읽어 일지 한 줄을 써 줘요.", "image": "", "tags": ["업무", "사진"], "date": "2026-09-23" },
     { "url": "https://example.com/meal-sheet", "title": "영수증으로 식비 장부", "note": "영수증을 찍으면 날짜 · 금액 · 인원이 표로 쌓여요.", "image": "", "tags": ["업무", "엑셀"], "date": "2026-10-08" },
@@ -702,16 +818,20 @@
   let data, cards, numbered, tags;
   let tag = "";
   let query = new URLSearchParams(location.search).get("q") || "";
+  // 20장씩 한 쪽. 주소 ?p=2 로 그 쪽을 바로 연다.
+  const PER = 20;
+  let page = Math.max(1, Number(new URLSearchParams(location.search).get("p")) || 1);
   $("q").value = query;
 
   const setUrl = () => {
     const url = new URL(location.href);
     if (query.trim()) url.searchParams.set("q", query.trim()); else url.searchParams.delete("q");
     if (blank) url.searchParams.set("starter", "1"); else url.searchParams.delete("starter");
+    if (page > 1) url.searchParams.set("p", String(page)); else url.searchParams.delete("p");
     history.replaceState(null, "", url);
   };
 
-  // 한 판을 통째로 그린다. 기본 판과 빈 판을 오갈 때 다시 부른다.
+  // 한 벌을 통째로 그린다. 기본 예시와 빈 예시를 오갈 때 다시 부른다.
   const load = () => {
     data = blank ? starter : main;
     cards = (data.cards || []).filter((c) => c && c.url && c.title);
@@ -722,11 +842,11 @@
     $("kicker").textContent = `Field guide · ${two(cards.length)} entries`;
     const years = cards.map((c) => (c.date || "").slice(0, 4)).filter(Boolean).sort();
     $("stamp").textContent = `No. ${two(cards.length)}${years.length ? ` · ${years[years.length - 1]}` : ""}`;
-    // 크레딧 줄은 원작자의 예시 · 빈 판에서만. 내 카드로 바꾸면 숨고, "credit": true 면 남는다.
+    // 크레딧 줄은 원작자의 예시 · 빈 예시에서만. 내 카드로 바꾸면 숨고, "credit": true 면 남는다.
     $("credit").hidden = !(blank || data.example || data.credit);
     const flip = $("flip");
     flip.hidden = !starter;
-    flip.textContent = blank ? "예시로 돌아가기" : "빈 판 보기";
+    flip.textContent = blank ? "예시로 돌아가기" : "빈 예시 보기";
     flip.setAttribute("aria-pressed", String(blank));
     // 오래된 것이 01. 늘어나도 번호가 바뀌지 않는다.
     numbered = cards
@@ -748,6 +868,8 @@
     const b = e.target.closest("button");
     if (!b) return;
     tag = b.dataset.tag;
+    page = 1;
+    setUrl();
     drawTags();
     draw();
   });
@@ -764,8 +886,16 @@
 
   const draw = () => {
     const shown = numbered.filter(fits);
+    const pages = Math.max(1, Math.ceil(shown.length / PER));
+    page = Math.min(page, pages);
+    const folio = `${two(page)} / ${two(pages)}`;
     $("count").textContent = shown.length === cards.length ? `${two(cards.length)} entries` : `${two(shown.length)} / ${two(cards.length)}`;
-    $("grid").innerHTML = shown.map((c) => {
+    $("pager").hidden = pages < 2;
+    $("pageno").textContent = folio;
+    $("prev").disabled = page <= 1;
+    $("next").disabled = page >= pages;
+    $("folio").textContent = folio;
+    $("grid").innerHTML = shown.slice((page - 1) * PER, page * PER).map((c) => {
       const [a, b] = tone(c.title);
       const ch = esc([...c.title][0] || "·");
       const blankTile = `<span class="blank" style="background:linear-gradient(160deg,${a},${b})">${ch}</span>`;
@@ -794,8 +924,18 @@
     }, { once: true }));
   };
 
+  const turn = (step) => {
+    page += step;
+    setUrl();
+    draw();
+    $("grid").scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+  $("prev").addEventListener("click", () => turn(-1));
+  $("next").addEventListener("click", () => turn(1));
+
   $("q").addEventListener("input", (e) => {
     query = e.target.value;
+    page = 1;
     setUrl();
     draw();
   });
@@ -807,6 +947,7 @@
   $("flip").addEventListener("click", () => {
     blank = !blank;
     query = "";
+    page = 1;
     $("q").value = "";
     setUrl();
     load();
