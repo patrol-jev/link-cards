@@ -12,7 +12,8 @@
 </script>
 <!--
   link-cards · 한 장짜리 카드 모아보기 · 원작 patrol_jev (https://github.com/patrol-jev/link-cards)
-  - 맨 아래 「Made with link-cards · by patrol_jev」 한 줄과 위의 generator · ld+json 은 지우지 말아 주세요. 그것만 남기면 마음대로 고쳐 써도 됩니다.
+  - link-cards 는 patrol_jev 가 처음 만들었습니다. 마음대로 고쳐 쓰셔도 됩니다. (인용 시 patrol_jev 한 줄 ㅎㅎ)
+  - 맨 아래 크레딧 줄은 기본 예시에서만 보이고, 내 카드로 바꾸면 숨습니다. 남기고 싶으면 카드 자료에 "credit": true.
   - 이 파일 하나가 전부입니다. 빌드도, 라이브러리도, 서버도 없습니다. 더블클릭하면 열립니다.
   - 카드 자료는 맨 아래 <script id="cards"> 안의 JSON 한 덩어리입니다. 고칠 곳은 거기뿐입니다.
   - 자료를 채우는 법은 SKILL.md(Claude 에게) · README.md(사람에게)에 있습니다.
@@ -422,7 +423,7 @@
   <p class="none" id="none" hidden></p>
 
   <footer class="folio">
-    <span class="label credit">Made with <a href="https://github.com/patrol-jev/link-cards" rel="noopener">link-cards</a> · by <a href="https://www.threads.com/@patrol_jev" rel="noopener author">patrol_jev</a></span>
+    <span class="label credit" id="credit">Made with <a href="https://github.com/patrol-jev/link-cards" rel="noopener">link-cards</a> · by <a href="https://www.threads.com/@patrol_jev" rel="noopener author">patrol_jev</a></span>
     <span class="label">01 / 01</span>
   </footer>
 </div>
@@ -442,6 +443,7 @@
              없으면 "" 로 두면 빛깔 카드가 됩니다.
     tags   : 꼬리표 한두 개
     date   : 만든 날 (YYYY-MM-DD)
+  credit : true 면 맨 아래 「Made with link-cards · by patrol_jev」 를 남깁니다(빼도 됩니다).
 -->
 <script id="cards" type="application/json">
 {
@@ -720,6 +722,8 @@
     $("kicker").textContent = `Field guide · ${two(cards.length)} entries`;
     const years = cards.map((c) => (c.date || "").slice(0, 4)).filter(Boolean).sort();
     $("stamp").textContent = `No. ${two(cards.length)}${years.length ? ` · ${years[years.length - 1]}` : ""}`;
+    // 크레딧 줄은 원작자의 예시 · 빈 판에서만. 내 카드로 바꾸면 숨고, "credit": true 면 남는다.
+    $("credit").hidden = !(blank || data.example || data.credit);
     const flip = $("flip");
     flip.hidden = !starter;
     flip.textContent = blank ? "예시로 돌아가기" : "빈 판 보기";
