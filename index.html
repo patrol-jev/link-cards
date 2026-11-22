@@ -398,7 +398,8 @@
     url    : 누르면 열리는 주소 (꼭)
     title  : 카드 제목 한 줄 (꼭)
     note   : 무엇인지 한 줄
-    image  : 섬네일 주소. 페이지의 미리보기 그림(og:image). 모르면 "" 로 두면 빛깔 카드가 됩니다.
+    image  : 섬네일. 페이지의 미리보기 그림 주소(og:image)나, 이 파일 옆 폴더의 그림(thumbs/이름.jpg).
+             없으면 "" 로 두면 빛깔 카드가 됩니다.
     tags   : 꼬리표 한두 개
     date   : 만든 날 (YYYY-MM-DD)
 -->
@@ -427,6 +428,8 @@
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[ch]);
   const host = (url) => { try { return new URL(url).hostname.replace(/^www\./, ""); } catch { return ""; } };
   const safe = (url) => /^https?:\/\//i.test(url) ? url : "#";
+  // 섬네일은 https 주소이거나, 이 파일 옆 폴더의 그림(thumbs/xx.jpg)이다.
+  const safeImg = (src) => /^https?:\/\//i.test(src) || (/^(\.\/)?[\w-]+(\/[\w-]+)*\.(jpe?g|png|webp|gif|avif)$/i.test(src)) ? src : "";
 
   // 섬네일이 없는 카드의 빛깔. 이름으로 고르니 늘 같은 빛깔이 나온다.
   const TONES = [["#3a4736", "#82906a"], ["#27425f", "#e9b58c"], ["#4b5a75", "#f2c58f"], ["#0d3644", "#8fd0c8"], ["#4a3556", "#f3b6a6"], ["#32160f", "#f08a4b"], ["#587fa2", "#e9f1f6"], ["#243128", "#aebd71"]];
@@ -480,7 +483,7 @@
     $("grid").innerHTML = shown.map((c) => {
       const [a, b] = tone(c.title);
       const blank = `<span class="blank" style="background:linear-gradient(160deg,${a},${b})">${esc([...c.title][0] || "·")}</span>`;
-      const img = c.image ? `<img src="${esc(safe(c.image))}" alt="" loading="lazy" referrerpolicy="no-referrer" data-a="${a}" data-b="${b}" data-ch="${esc([...c.title][0] || "·")}">` : blank;
+      const img = safeImg(c.image || "") ? `<img src="${esc(safeImg(c.image))}" alt="" loading="lazy" referrerpolicy="no-referrer" data-a="${a}" data-b="${b}" data-ch="${esc([...c.title][0] || "·")}">` : blank;
       return `<a class="card" href="${esc(safe(c.url))}" target="_blank" rel="noopener noreferrer">
         <figure class="fig">${img}</figure>
         <div class="cap"><span class="label">Fig. ${two(c.no)}</span><span class="label">${esc((c.tags || [])[0] || host(c.url))}</span></div>
