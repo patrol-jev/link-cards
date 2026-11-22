@@ -397,6 +397,122 @@
     padding-top: 14px;
     border-top: 1px solid var(--hair);
   }
+  /* 고치기(FIX). 같은 쪽에서 카드를 고르고, 고치고, 지운다 */
+  .fixbtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 28px;
+    padding: 0 11px;
+    border: 1px solid var(--hair);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--dim);
+    font: inherit;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: .13em;
+    cursor: pointer;
+    transition: background .2s, color .2s;
+  }
+  .fixbtn[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+  .meta-edit {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1.4fr;
+    gap: 14px;
+    padding: 22px 0 6px;
+    scroll-margin-top: 20px;
+  }
+  .meta-edit label, .ed label { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+  .meta-edit input, .meta-edit textarea, .ed input, .ed textarea {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid var(--hair);
+    border-radius: 10px;
+    background: var(--card);
+    color: var(--ink);
+    font: inherit;
+    font-size: 15px;
+    line-height: 1.45;
+    resize: vertical;
+    outline: none;
+  }
+  .meta-edit :is(input, textarea):focus, .ed :is(input, textarea):focus { border-color: var(--accent); }
+  .ed input[readonly] { color: var(--faint); }
+  .grid.fixing .card { position: relative; cursor: pointer; }
+  .grid.fixing .card.picked .fig { box-shadow: 0 0 0 2px var(--ink); }
+  .grid.fixing .card.picked { opacity: .78; }
+  .sel {
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    z-index: 3;
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, .92);
+    box-shadow: 0 1px 6px rgba(0, 0, 0, .18);
+    cursor: pointer;
+  }
+  .sel input { width: 17px; height: 17px; margin: 0; accent-color: #26352a; cursor: pointer; }
+  .fig-swap {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    z-index: 3;
+    height: 30px;
+    padding: 0 12px;
+    border: 0;
+    border-radius: 999px;
+    background: rgba(20, 28, 23, .78);
+    color: #fff;
+    font: inherit;
+    font-size: 12.5px;
+    cursor: pointer;
+  }
+  .ed-open, .ed-acts button, .fixbar button {
+    height: 32px;
+    padding: 0 13px;
+    border: 1px solid var(--hair);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--ink);
+    font: inherit;
+    font-size: 13px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .ed-open { margin-left: auto; }
+  .ed { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--hair); cursor: default; }
+  .ed-two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .ed-acts { display: flex; flex-wrap: wrap; gap: 8px; }
+  .ed-acts .solid, .fixbar .solid { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+  .ed-acts .warn { color: #b3412e; border-color: #b3412e55; }
+  .ed-acts .solid { margin-left: auto; }
+  .fixbar {
+    position: sticky;
+    bottom: 14px;
+    z-index: 5;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-top: 28px;
+    padding: 10px 12px 10px 18px;
+    border: 1px solid var(--hair);
+    border-radius: 999px;
+    background: var(--card);
+    box-shadow: 0 16px 40px -18px rgba(0, 0, 0, .35);
+  }
+  .fixbar #fixnote { flex: 1; min-width: 160px; font-size: 13px; color: var(--dim); }
+  .fixbar button:disabled { opacity: .35; cursor: default; }
+  @media (max-width: 700px) {
+    .meta-edit { grid-template-columns: 1fr; }
+    .fixbar { border-radius: 18px; }
+    .ed-two { grid-template-columns: 1fr; }
+  }
   @media (max-width: 700px) {
     .bar { height: 64px; }
     .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 26px 14px; }
@@ -438,6 +554,15 @@
     <span class="label">01</span>
     <b>모아보기</b>
     <span class="label" id="count"></span>
+    <button class="fixbtn" id="fix" type="button" aria-pressed="false" title="카드 고치기 · 지우기">
+      <svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true"><path d="M11.3 1.7a1.6 1.6 0 0 1 2.3 0l.7.7a1.6 1.6 0 0 1 0 2.3L5.6 13.4 2 14l.6-3.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M9.8 3.2l3 3" stroke="currentColor" stroke-width="1.4"/></svg>
+      <span>FIX</span>
+    </button>
+  </div>
+  <div class="meta-edit" id="metaEdit" hidden>
+    <label><span class="label">머리 이름</span><input data-k="owner" maxlength="40"></label>
+    <label><span class="label">큰 제목 (줄바꿈 가능)</span><textarea data-k="title" rows="2" maxlength="60"></textarea></label>
+    <label><span class="label">소개</span><textarea data-k="intro" rows="2" maxlength="200"></textarea></label>
   </div>
   <main class="grid" id="grid"></main>
   <p class="none" id="none" hidden></p>
@@ -446,6 +571,15 @@
     <span class="label" id="pageno"></span>
     <button type="button" id="next">다음 →</button>
   </nav>
+
+  <div class="fixbar" id="fixbar" hidden>
+    <span id="fixnote"></span>
+    <button type="button" id="delSel" disabled>고른 것 삭제</button>
+    <button type="button" id="undo" disabled>되돌리기</button>
+    <button type="button" id="save" class="solid">저장</button>
+    <button type="button" id="done">끝내기</button>
+  </div>
+  <input type="file" id="pick" accept="image/*" hidden>
 
   <footer class="folio">
     <span class="label credit" id="credit">Made with <a href="https://github.com/patrol-jev/link-cards" rel="noopener">link-cards</a> · by <a href="https://www.threads.com/@patrol_jev" rel="noopener author">patrol_jev</a></span>
@@ -475,7 +609,7 @@
   "example": true,
   "title": "스레드에 올린 앱,\n한 장씩 모았어요",
   "owner": "patrol_jev 앱 모아보기",
-  "intro": "스레드 @patrol_jev 에 올린 앱 중 지금 사이트에서 돌아가는 29개예요. 최근 것부터 20개씩 넘겨 봐요. 이름이나 하는 일로 찾아보세요.",
+  "intro": "스레드 @patrol_jev 에 올린 앱 중 지금 사이트에서 돌아가는 27개예요. 이름이나 하는 일로 찾아보세요.",
   "cards": [
     {
       "url": "https://patrol.ai.kr/agree",
@@ -684,16 +818,6 @@
       "date": "2026-10-29"
     },
     {
-      "url": "https://patrol.ai.kr/team",
-      "title": "현장방",
-      "note": "근로자가 같이 위험을 찾고 정하는 단톡방. 기록이 위험성평가표(hwpx)가 돼요.",
-      "image": "thumbs/team.jpg",
-      "tags": [
-        "업무"
-      ],
-      "date": "2026-10-24"
-    },
-    {
       "url": "https://patrol.ai.kr/bunring",
       "title": "심해",
       "note": "위로 쓸어 올리면 바다 밑으로 내려가요. 끝은 10,898m.",
@@ -754,16 +878,6 @@
       "date": "2026-09-30"
     },
     {
-      "url": "https://patrol.ai.kr/report",
-      "title": "순찰 결과 보고서",
-      "note": "한 달 순찰 사진을 넣으면 결과 보고서가 hwpx 로 나와요.",
-      "image": "",
-      "tags": [
-        "업무"
-      ],
-      "date": "2026-09-26"
-    },
-    {
       "url": "https://patrol.ai.kr/patrol",
       "title": "순찰일지",
       "note": "사진을 올리면 순찰일지 글이 나오고 hwpx 로 받아요.",
@@ -799,29 +913,53 @@
 
 <script>
 (() => {
+  // 이 파일이 처음 열렸을 때의 모습. 저장할 때 카드 자료만 바꿔 끼워 새 파일을 만든다.
+  const pristine = "<!doctype html>\n" + document.documentElement.outerHTML;
   const $ = (id) => document.getElementById(id);
   const two = (n) => String(n).padStart(2, "0");
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[ch]);
   const host = (url) => { try { return new URL(url).hostname.replace(/^www\./, ""); } catch { return ""; } };
   const safe = (url) => /^https?:\/\//i.test(url) ? url : "#";
-  // 섬네일은 https 주소이거나, 이 파일 옆 폴더의 그림(thumbs/xx.jpg)이다.
-  const safeImg = (src) => /^https?:\/\//i.test(src) || (/^(\.\/)?[\w-]+(\/[\w-]+)*\.(jpe?g|png|webp|gif|avif)$/i.test(src)) ? src : "";
+  // 섬네일은 https 주소, 이 파일 옆 폴더의 그림(thumbs/xx.jpg), 또는 이 파일 안에 넣은 그림(data:image/…)이다.
+  const safeImg = (src) => /^https?:\/\//i.test(src) || /^(\.\/)?[\w-]+(\/[\w-]+)*\.(jpe?g|png|webp|gif|avif)$/i.test(src) || /^data:image\/(png|jpe?g|webp|gif);base64,[A-Za-z0-9+/=]+$/.test(src) ? src : "";
   const read = (id) => { try { return JSON.parse($(id)?.textContent || "null"); } catch { return null; } };
 
   // 섬네일이 없는 카드의 빛깔. 이름으로 고르니 늘 같은 빛깔이 나온다.
   const TONES = [["#3a4736", "#82906a"], ["#27425f", "#e9b58c"], ["#4b5a75", "#f2c58f"], ["#0d3644", "#8fd0c8"], ["#4a3556", "#f3b6a6"], ["#32160f", "#f08a4b"], ["#587fa2", "#e9f1f6"], ["#243128", "#aebd71"]];
   const tone = (text) => { let sum = 0; for (const ch of text) sum = (sum * 31 + ch.codePointAt(0)) % 100003; return TONES[sum % TONES.length]; };
 
-  const main = read("cards") || { cards: [] };
+  const original = read("cards") || { cards: [] };
+  const originalText = JSON.stringify(original);
   const starter = read("starter");
-  let blank = Boolean(starter) && new URLSearchParams(location.search).get("starter") === "1";
+
+  // 고친 것은 저장하기 전까지 이 브라우저에 남겨 둔다. 파일이 바뀌었으면(원본이 다르면) 옛 고침은 버린다.
+  const DRAFT_KEY = `link-cards:draft:${location.pathname}`;
+  const sum = (text) => { let h = 0; for (let i = 0; i < text.length; i++) h = (h * 31 + text.charCodeAt(i)) | 0; return String(h); };
+  let main = JSON.parse(originalText);
+  let leftover = false;
+  try {
+    const kept = JSON.parse(localStorage.getItem(DRAFT_KEY) || "null");
+    if (kept && kept.base === sum(originalText) && kept.data) { main = kept.data; leftover = true; }
+  } catch { /* 못 읽으면 처음 것으로 */ }
+  const keep = () => {
+    try {
+      if (JSON.stringify(main) === originalText) localStorage.removeItem(DRAFT_KEY);
+      else localStorage.setItem(DRAFT_KEY, JSON.stringify({ base: sum(originalText), data: main }));
+    } catch { /* 자리가 모자라면 이 화면에서만 */ }
+  };
+
+  const params = new URLSearchParams(location.search);
+  let blank = Boolean(starter) && params.get("starter") === "1";
   let data, cards, numbered, tags;
   let tag = "";
-  let query = new URLSearchParams(location.search).get("q") || "";
-  // 20장씩 한 쪽. 주소 ?p=2 로 그 쪽을 바로 연다.
-  const PER = 20;
-  let page = Math.max(1, Number(new URLSearchParams(location.search).get("p")) || 1);
+  let query = params.get("q") || "";
   $("q").value = query;
+  // 20장씩 한 쪽. 주소 ?p=2 로 그 쪽을 바로 연다. 고치는 동안은 한 쪽에 다 보인다.
+  const PER = 20;
+  let page = Math.max(1, Number(params.get("p")) || 1);
+  let fixing = false;
+  let open = -1;
+  const picked = new Set();
 
   const setUrl = () => {
     const url = new URL(location.href);
@@ -831,10 +969,7 @@
     history.replaceState(null, "", url);
   };
 
-  // 한 벌을 통째로 그린다. 기본 예시와 빈 예시를 오갈 때 다시 부른다.
-  const load = () => {
-    data = blank ? starter : main;
-    cards = (data.cards || []).filter((c) => c && c.url && c.title);
+  const drawHead = () => {
     document.title = data.owner || "모아보기";
     $("brand").textContent = data.owner || "모아보기";
     $("title").innerHTML = esc(data.title || "").replace(/\n/g, "<br>");
@@ -842,20 +977,29 @@
     $("kicker").textContent = `Field guide · ${two(cards.length)} entries`;
     const years = cards.map((c) => (c.date || "").slice(0, 4)).filter(Boolean).sort();
     $("stamp").textContent = `No. ${two(cards.length)}${years.length ? ` · ${years[years.length - 1]}` : ""}`;
+  };
+
+  // 한 벌을 통째로 그린다. 기본 예시와 빈 예시를 오갈 때, 카드를 지우거나 고친 뒤에 다시 부른다.
+  const load = (keepTag) => {
+    data = blank ? starter : main;
+    cards = (data.cards || []).filter((c) => c && c.url && c.title);
+    drawHead();
     // 크레딧 줄은 원작자의 예시 · 빈 예시에서만. 내 카드로 바꾸면 숨고, "credit": true 면 남는다.
     $("credit").hidden = !(blank || data.example || data.credit);
     const flip = $("flip");
-    flip.hidden = !starter;
+    flip.hidden = !starter || fixing;
     flip.textContent = blank ? "예시로 돌아가기" : "빈 예시 보기";
     flip.setAttribute("aria-pressed", String(blank));
+    $("fix").hidden = blank;
     // 오래된 것이 01. 늘어나도 번호가 바뀌지 않는다.
-    numbered = cards
+    numbered = (data.cards || [])
       .map((c, i) => ({ ...c, i }))
+      .filter((c) => c.url && c.title)
       .sort((a, b) => (a.date || "").localeCompare(b.date || "") || a.i - b.i)
       .map((c, n) => ({ ...c, no: n + 1 }))
       .sort((a, b) => (b.date || "").localeCompare(a.date || "") || b.no - a.no);
     tags = [...new Set(cards.flatMap((c) => c.tags || []))];
-    tag = "";
+    if (!keepTag || !tags.includes(tag)) tag = "";
     drawTags();
     draw();
   };
@@ -884,9 +1028,37 @@
     for (const one of list) if (one.isIntersecting) { one.target.classList.add("in"); seen.unobserve(one.target); }
   }, { rootMargin: "0px 0px -8% 0px" }) : null;
 
+  const figure = (c) => {
+    const [a, b] = tone(c.title);
+    const ch = esc([...c.title][0] || "·");
+    const src = safeImg(c.image || "");
+    return src
+      ? `<img src="${esc(src)}" alt="" loading="lazy" referrerpolicy="no-referrer" data-a="${a}" data-b="${b}" data-ch="${ch}">`
+      : `<span class="blank" style="background:linear-gradient(160deg,${a},${b})">${ch}</span>`;
+  };
+
+  // 고치는 칸. 카드 안에서 바로 열린다(따로 창을 띄우지 않는다).
+  const editor = (c) => `
+    <div class="ed" data-i="${c.i}">
+      <label><span class="label">제목</span><input data-f="title" value="${esc(c.title)}" maxlength="60"></label>
+      <label><span class="label">한 줄</span><textarea data-f="note" rows="2" maxlength="160">${esc(c.note || "")}</textarea></label>
+      <label><span class="label">주소</span><input data-f="url" value="${esc(c.url)}" inputmode="url"></label>
+      <div class="ed-two">
+        <label><span class="label">꼬리표</span><input data-f="tags" value="${esc((c.tags || []).join(", "))}" placeholder="쉼표로 나눔"></label>
+        <label><span class="label">날짜</span><input data-f="date" type="date" value="${esc(c.date || "")}"></label>
+      </div>
+      <label><span class="label">섬네일</span><input data-f="image" value="${esc((c.image || "").startsWith("data:") ? "(이 파일 안에 넣은 그림)" : c.image || "")}" placeholder="그림 주소 · 비우면 빛깔 카드" ${(c.image || "").startsWith("data:") ? "readonly" : ""}></label>
+      <div class="ed-acts">
+        <button type="button" data-act="pick">그림 고르기</button>
+        <button type="button" data-act="unimg">섬네일 빼기</button>
+        <button type="button" data-act="drop" class="warn">이 카드 삭제</button>
+        <button type="button" data-act="close" class="solid">닫기</button>
+      </div>
+    </div>`;
+
   const draw = () => {
     const shown = numbered.filter(fits);
-    const pages = Math.max(1, Math.ceil(shown.length / PER));
+    const pages = fixing ? 1 : Math.max(1, Math.ceil(shown.length / PER));
     page = Math.min(page, pages);
     const folio = `${two(page)} / ${two(pages)}`;
     $("count").textContent = shown.length === cards.length ? `${two(cards.length)} entries` : `${two(shown.length)} / ${two(cards.length)}`;
@@ -895,25 +1067,29 @@
     $("prev").disabled = page <= 1;
     $("next").disabled = page >= pages;
     $("folio").textContent = folio;
-    $("grid").innerHTML = shown.slice((page - 1) * PER, page * PER).map((c) => {
-      const [a, b] = tone(c.title);
-      const ch = esc([...c.title][0] || "·");
-      const blankTile = `<span class="blank" style="background:linear-gradient(160deg,${a},${b})">${ch}</span>`;
-      const src = safeImg(c.image || "");
-      const img = src ? `<img src="${esc(src)}" alt="" loading="lazy" referrerpolicy="no-referrer" data-a="${a}" data-b="${b}" data-ch="${ch}">` : blankTile;
-      return `<a class="card" href="${esc(safe(c.url))}" target="_blank" rel="noopener noreferrer">
-        <figure class="fig">${img}</figure>
+    const list = fixing ? shown : shown.slice((page - 1) * PER, page * PER);
+    $("grid").classList.toggle("fixing", fixing);
+    $("grid").innerHTML = list.map((c) => {
+      const body = `
+        <figure class="fig">${figure(c)}${fixing ? `<button type="button" class="fig-swap" data-act="pick" data-i="${c.i}">섬네일 바꾸기</button>` : ""}</figure>
         <div class="cap"><span class="label">Fig. ${two(c.no)}</span><span class="label">${esc((c.tags || [])[0] || host(c.url))}</span></div>
         <h2>${esc(c.title)}</h2>
-        ${c.note ? `<p>${esc(c.note)}</p>` : ""}
-        <div class="foot"><span>${esc(host(c.url))}${c.date ? ` · ${esc(c.date.slice(0, 7).replace("-", "."))}` : ""}</span><b>열기 ↗</b></div>
-      </a>`;
+        ${c.note ? `<p>${esc(c.note)}</p>` : ""}`;
+      if (!fixing) {
+        return `<a class="card" href="${esc(safe(c.url))}" target="_blank" rel="noopener noreferrer">${body}
+          <div class="foot"><span>${esc(host(c.url))}${c.date ? ` · ${esc(c.date.slice(0, 7).replace("-", "."))}` : ""}</span><b>열기 ↗</b></div></a>`;
+      }
+      return `<article class="card in${picked.has(c.i) ? " picked" : ""}${open === c.i ? " open" : ""}" data-i="${c.i}">
+        <label class="sel" title="고르기"><input type="checkbox" data-sel="${c.i}" ${picked.has(c.i) ? "checked" : ""} aria-label="${esc(c.title)} 고르기"></label>
+        ${body}
+        ${open === c.i ? editor(c) : `<div class="foot"><span>${esc(host(c.url))}</span><button type="button" class="ed-open" data-act="open" data-i="${c.i}">고치기</button></div>`}
+      </article>`;
     }).join("");
     const none = $("none");
     none.hidden = shown.length > 0;
     none.textContent = query ? `「${query}」 에 맞는 카드가 없어요.` : "아직 카드가 없어요.";
     $("clear").hidden = !query;
-    document.querySelectorAll(".card").forEach((el) => seen ? seen.observe(el) : el.classList.add("in"));
+    document.querySelectorAll(".card:not(.in)").forEach((el) => seen ? seen.observe(el) : el.classList.add("in"));
     // 섬네일을 못 받으면(지워졌거나 막혔으면) 빛깔 카드로 바꾼다.
     document.querySelectorAll(".fig img").forEach((im) => im.addEventListener("error", () => {
       const span = document.createElement("span");
@@ -922,7 +1098,184 @@
       span.textContent = im.dataset.ch;
       im.replaceWith(span);
     }, { once: true }));
+    drawBar();
   };
+
+  // ---------- 고치기 ----------
+
+  const dirty = () => JSON.stringify(main) !== originalText;
+  const drawBar = () => {
+    $("fixbar").hidden = !fixing;
+    $("fix").setAttribute("aria-pressed", String(fixing));
+    $("metaEdit").hidden = !fixing;
+    $("delSel").disabled = picked.size === 0;
+    $("delSel").textContent = picked.size ? `고른 ${picked.size}개 삭제` : "고른 것 삭제";
+    $("undo").disabled = !dirty();
+    $("fixnote").textContent = dirty() ? "고친 것이 있어요 · 저장하면 이 파일에 남아요" : "카드를 눌러 고치거나, 왼쪽 위 칸으로 골라 지워요";
+  };
+
+  const fillMeta = () => {
+    document.querySelectorAll("#metaEdit [data-k]").forEach((el) => { el.value = main[el.dataset.k] || ""; });
+  };
+
+  const changed = (redraw) => {
+    keep();
+    if (redraw) load(true); else { drawHead(); drawBar(); }
+  };
+
+  const setFix = (on) => {
+    fixing = on;
+    open = -1;
+    picked.clear();
+    if (on) {
+      blank = false;
+      page = 1;
+      setUrl();
+      fillMeta();
+    }
+    load(true);
+    if (on) $("metaEdit").scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+  $("fix").addEventListener("click", () => setFix(!fixing));
+  $("done").addEventListener("click", () => setFix(false));
+
+  $("metaEdit").addEventListener("input", (e) => {
+    const el = e.target.closest("[data-k]");
+    if (!el) return;
+    main[el.dataset.k] = el.value;
+    changed(false);
+  });
+
+  // 그림을 고르면 가로 640 으로 줄여 이 파일 안에 넣는다(따로 그림 파일이 필요 없다).
+  const shrink = (file) => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(reader.error);
+    reader.onload = () => {
+      const img = new Image();
+      img.onerror = reject;
+      img.onload = () => {
+        const scale = Math.min(1, 640 / img.naturalWidth);
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.round(img.naturalWidth * scale);
+        canvas.height = Math.round(img.naturalHeight * scale);
+        canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
+        const webp = canvas.toDataURL("image/webp", 0.78);
+        resolve(webp.startsWith("data:image/webp") ? webp : canvas.toDataURL("image/jpeg", 0.8));
+      };
+      img.src = String(reader.result);
+    };
+    reader.readAsDataURL(file);
+  });
+  let pickFor = -1;
+  $("pick").addEventListener("change", async (e) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file || pickFor < 0) return;
+    try {
+      main.cards[pickFor].image = await shrink(file);
+      changed(true);
+    } catch {
+      $("fixnote").textContent = "그 그림은 쓰지 못했어요.";
+    }
+  });
+
+  const dropCards = (list) => {
+    const gone = new Set(list);
+    main.cards = main.cards.filter((_, i) => !gone.has(i));
+    picked.clear();
+    open = -1;
+    changed(true);
+  };
+
+  $("grid").addEventListener("click", (e) => {
+    if (!fixing) return;
+    const sel = e.target.closest("[data-sel]");
+    if (sel) {
+      const i = Number(sel.dataset.sel);
+      if (sel.checked) picked.add(i); else picked.delete(i);
+      sel.closest(".card")?.classList.toggle("picked", sel.checked);
+      drawBar();
+      return;
+    }
+    const act = e.target.closest("[data-act]");
+    const card = e.target.closest(".card");
+    const i = Number(act?.dataset.i ?? card?.dataset.i ?? -1);
+    if (!act) {
+      // 카드 아무 데나 누르면 그 카드의 고치는 칸이 열린다.
+      if (card && !e.target.closest(".ed, label.sel") && open !== i) { open = i; draw(); card.scrollIntoView({ block: "nearest" }); }
+      return;
+    }
+    const at = i >= 0 ? i : Number(e.target.closest(".ed")?.dataset.i ?? -1);
+    if (act.dataset.act === "open") { open = at; draw(); return; }
+    if (act.dataset.act === "close") { open = -1; draw(); return; }
+    if (act.dataset.act === "pick") { pickFor = at; $("pick").click(); return; }
+    if (act.dataset.act === "unimg") { main.cards[at].image = ""; changed(true); return; }
+    if (act.dataset.act === "drop") {
+      if (act.dataset.sure !== "1") { act.dataset.sure = "1"; act.textContent = "한 번 더 누르면 삭제"; return; }
+      dropCards([at]);
+    }
+  });
+
+  // 고치는 칸의 글자. 칠 때마다 다시 그리지 않는다(입력 칸이 흔들리지 않게). 닫으면 다시 그린다.
+  $("grid").addEventListener("input", (e) => {
+    const el = e.target.closest("[data-f]");
+    const box = e.target.closest(".ed");
+    if (!el || !box || el.readOnly) return;
+    const c = main.cards[Number(box.dataset.i)];
+    const v = el.value;
+    if (el.dataset.f === "tags") c.tags = v.split(",").map((t) => t.trim()).filter(Boolean).slice(0, 3);
+    else c[el.dataset.f] = el.dataset.f === "title" ? v.replace(/\n/g, " ") : v;
+    const h2 = box.closest(".card")?.querySelector("h2");
+    if (h2 && el.dataset.f === "title") h2.textContent = v;
+    changed(false);
+  });
+
+  $("delSel").addEventListener("click", () => {
+    if (!picked.size) return;
+    const b = $("delSel");
+    if (b.dataset.sure !== "1") { b.dataset.sure = "1"; b.textContent = `한 번 더 누르면 ${picked.size}개 삭제`; setTimeout(() => { b.dataset.sure = ""; drawBar(); }, 3000); return; }
+    b.dataset.sure = "";
+    dropCards([...picked]);
+  });
+
+  $("undo").addEventListener("click", () => {
+    main = JSON.parse(originalText);
+    picked.clear();
+    open = -1;
+    fillMeta();
+    changed(true);
+  });
+
+  // 저장: 이 파일에 카드 자료만 바꿔 끼운 새 index.html. 고를 수 있는 브라우저면 같은 파일에 덮어쓰고, 아니면 내려받는다.
+  $("save").addEventListener("click", async () => {
+    const out = JSON.parse(JSON.stringify(main));
+    // 손으로 고쳤으면 이제 내 것이다. 원작자의 기본 예시 표시는 뗀다.
+    if (dirty()) delete out.example;
+    const json = JSON.stringify(out, null, 2).replace(/<\/script/gi, "<\\/script");
+    const html = pristine.replace(/(<script id="cards" type="application\/json">)[\s\S]*?(<\/script>)/, (_, a, b) => `${a}\n${json}\n${b}`);
+    const blob = new Blob([html], { type: "text/html" });
+    try {
+      if (window.showSaveFilePicker) {
+        const handle = await window.showSaveFilePicker({ suggestedName: "index.html", types: [{ description: "HTML", accept: { "text/html": [".html"] } }] });
+        const w = await handle.createWritable();
+        await w.write(blob);
+        await w.close();
+      } else {
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = "index.html";
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+      }
+      try { localStorage.removeItem(DRAFT_KEY); } catch { /* 그대로 */ }
+      $("fixnote").textContent = "저장했어요. 그 파일을 열면 고친 대로 보여요.";
+    } catch (err) {
+      if (err && err.name === "AbortError") return;
+      $("fixnote").textContent = "저장하지 못했어요. 다시 눌러 주세요.";
+    }
+  });
+
+  // ---------- 넘기기 · 찾기 · 빈 예시 ----------
 
   const turn = (step) => {
     page += step;
@@ -955,6 +1308,11 @@
   });
 
   load();
+  if (leftover && dirty()) {
+    // 저장 안 한 고침이 남아 있으면 고치는 화면으로 바로 연다.
+    setFix(true);
+    $("fixnote").textContent = "저장 안 한 고침이 남아 있어요 · 저장하거나 되돌리기";
+  }
 })();
 </script>
 </body>
