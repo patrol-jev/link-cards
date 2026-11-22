@@ -15,6 +15,7 @@
   - link-cards 는 patrol_jev 가 처음 만들었습니다. 마음대로 고쳐 쓰셔도 됩니다. (인용 시 patrol_jev 한 줄 ㅎㅎ)
   - 맨 아래 크레딧 줄은 기본 예시에서만 보이고, 내 카드로 바꾸면 숨습니다. 남기고 싶으면 카드 자료에 "credit": true.
   - 이 파일 하나가 전부입니다. 빌드도, 라이브러리도, 서버도 없습니다. 더블클릭하면 열립니다.
+  - 곁의 seasons.js 는 머리의 봄 · 여름 · 가을 · 겨울 배지입니다(season-badges, 따로 쓰는 스킬). 지우면 배지만 사라집니다.
   - 카드 자료는 맨 아래 <script id="cards"> 안의 JSON 한 덩어리입니다. 고칠 곳은 거기뿐입니다.
   - 자료를 채우는 법은 SKILL.md(Claude 에게) · README.md(사람에게)에 있습니다.
 -->
@@ -44,6 +45,17 @@
       color-scheme: dark;
     }
   }
+  /* 계절 배지(seasons.js)를 누르면 <html data-season="…"> 이 붙고, 종이와 글씨 색이 그 계절로 바뀐다 */
+  html[data-season="spring"] { --paper: #eef3e1; --ink: #2a3d24; --dim: #5f7354; --faint: #93a585; --hair: #6f8a5a44; --card: #fbfdf3; --accent: #e58fb0; }
+  html[data-season="summer"] { --paper: #e8f0d6; --ink: #1c3a1f; --dim: #4f6b48; --faint: #86a07c; --hair: #4f7a4044; --card: #fafcef; --accent: #e3b22f; }
+  html[data-season="autumn"] { --paper: #f4e9d8; --ink: #3d2a1b; --dim: #7a6150; --faint: #a8917e; --hair: #8a6a5044; --card: #fcf6ea; --accent: #d4713a; }
+  html[data-season="winter"] { --paper: #e6eef6; --ink: #1d3247; --dim: #56697c; --faint: #8b9cad; --hair: #6d84994d; --card: #f6f9fc; --accent: #7aa6d0; }
+  @media (prefers-color-scheme: dark) {
+    html[data-season="spring"] { --paper: #161d16; --ink: #eef3e4; --dim: #b4c2a8; --faint: #7f8f76; --hair: #d5e4c42e; --card: #1d261d; --accent: #ec9cbb; }
+    html[data-season="summer"] { --paper: #101c12; --ink: #ecf3df; --dim: #aec3a4; --faint: #7a9172; --hair: #cfe4c02e; --card: #172519; --accent: #edc04a; }
+    html[data-season="autumn"] { --paper: #1e1610; --ink: #f3e6d4; --dim: #c8b39c; --faint: #92806e; --hair: #e8d0b42e; --card: #271d15; --accent: #e2884f; }
+    html[data-season="winter"] { --paper: #0f1923; --ink: #e7eff7; --dim: #a9bccd; --faint: #7a8c9d; --hair: #c4d6e82e; --card: #16222e; --accent: #8fb6dc; }
+  }
   * { box-sizing: border-box; }
   [hidden] { display: none !important; }
   html { scroll-behavior: smooth; }
@@ -57,6 +69,7 @@
     line-height: 1.5;
     letter-spacing: -0.015em;
     -webkit-font-smoothing: antialiased;
+    transition: background-color .9s ease, color .9s ease;
   }
   a { color: inherit; }
   :focus-visible { outline: 2px solid var(--focus); outline-offset: 4px; }
@@ -120,6 +133,8 @@
     font-variant-numeric: tabular-nums;
   }
   .bar .label { margin-left: auto; }
+  /* 계절 배지 자리. 이름과 번호 사이 빈 곳 가운데. seasons.js 가 없으면 비어 있다 */
+  .bar .seasons { margin-left: auto; }
 
   .flip {
     height: 32px;
@@ -522,6 +537,9 @@
     .brand { font-size: 17px; min-width: 0; white-space: nowrap; }
     .brand span { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
     .bar #stamp { display: none; }
+    /* 폰에서는 계절 배지를 머리 아랫줄로 */
+    .bar:has(.seasons[data-ready]) { flex-wrap: wrap; height: auto; padding: 14px 0 12px; row-gap: 12px; }
+    .bar .seasons { order: 3; flex-basis: 100%; margin-left: 0; }
     .bar .flip { margin-left: auto; height: 30px; padding: 0 12px; font-size: 12.5px; }
     .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 26px 14px; }
     .card h2 { font-size: 17px; }
@@ -541,6 +559,7 @@
 <div class="shell">
   <header class="bar">
     <a class="brand" href="./"><i aria-hidden="true"><svg viewBox="0 0 16 16" width="1em" height="1em"><path d="M8 1.5v13M1.5 8h13M3.4 3.4l9.2 9.2M12.6 3.4l-9.2 9.2" stroke="currentColor" stroke-width="1.15" stroke-linecap="round" fill="none"/></svg></i><span id="brand"></span></a>
+    <span class="seasons" data-season-badges data-tint="off"></span>
     <span class="label" id="stamp"></span>
     <button class="flip" id="flip" type="button" hidden></button>
   </header>
@@ -1323,5 +1342,7 @@
   }
 })();
 </script>
+<!-- 계절 배지. 이 파일을 지우면 배지만 사라진다 · https://github.com/patrol-jev/season-badges -->
+<script src="seasons.js" defer></script>
 </body>
 </html>

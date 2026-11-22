@@ -4,5 +4,6 @@
 
 - 고치는 곳은 `index.html` 맨 아래 `<script id="cards">` 의 JSON 뿐입니다.
 - 링크 읽기는 `node tools/read-links.mjs`(links.txt → index.html)를 먼저 씁니다.
+- 곁의 `seasons.js` 는 머리의 계절 배지입니다(season-badges 사본). 고치지 않습니다. 빼 달라면 그 파일만 지웁니다.
 - 섬네일을 지어내지 않습니다. 없으면 `"image": ""`.
 - 사용자는 코드를 모를 수 있습니다. 끝나면 「index.html 을 더블클릭하면 열려요」 한 줄로 알립니다.
